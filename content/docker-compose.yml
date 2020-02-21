@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+
+  http:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - grafana
+    network_mode: "host"
+
+  grafana:
+    ports:
+      - "3000:3000"
+    image: grafana/grafana
+    depends_on:
+      - prometheus
+    volumes:
+    - './datasource.yml:/etc/grafana/provisioning/datasources/datasource.yaml'
+    - './dashboard.yml:/etc/grafana/provisioning/dashboards/dashboard.yml'
+    - './kittycount.json:/var/lib/grafana/dashboards/kittycount.json'
+    - './httpreq.json:/var/lib/grafana/dashboards/httpreq.json'
+    network_mode: "host"
+
+  prometheus:
+    ports:
+      - "9090:9090"
+    image: prom/prometheus
+    volumes:
+      - './prometheus.yml:/etc/prometheus/prometheus.yml'
+    network_mode: "host"
